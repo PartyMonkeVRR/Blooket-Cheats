@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>System Global Chat</title>
+    <style>
+        body { background: #0f0f0f; color: #00ff00; font-family: 'Courier New', monospace; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        #panel { width: 400px; height: 500px; border: 2px solid #00ff00; display: flex; flex-direction: column; background: #1a1a1a; box-shadow: 0 0 15px #00ff00; }
+        #header { padding: 10px; background: #00ff00; color: black; font-weight: bold; text-align: center; }
+        #chat-box { flex-grow: 1; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; }
+        .msg { padding: 5px 10px; border-radius: 5px; max-width: 80%; font-size: 14px; }
+        .system { color: #888; font-style: italic; font-size: 12px; }
+        .user-msg { background: #333; align-self: flex-start; border: 1px solid #00ff00; }
+        #input-area { display: flex; padding: 10px; border-top: 1px solid #00ff00; }
+        input { flex-grow: 1; background: transparent; border: none; color: #00ff00; outline: none; padding: 5px; }
+        button { background: #00ff00; border: none; color: black; padding: 5px 15px; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div id="panel">
+        <div id="header">GLOBAL SYSTEM MESSAGING v1.0</div>
+        <div id="chat-box" id="messages">
+            <div class="msg system">Connecting to global uplink...</div>
+        </div>
+        <div id="input-area">
+            <input type="text" id="user-input" placeholder="Type message..." autocomplete="off">
+            <button onclick="send()">SEND</button>
+        </div>
+    </div>
+
+    <script>
+        const chatBox = document.getElementById('chat-box');
+        const input = document.getElementById('user-input');
+
+        function addMessage(text, type = 'user-msg') {
+            const div = document.createElement('div');
+            div.className = `msg ${type}`;
+            div.innerText = text;
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function send() {
+            if (input.value.trim() === "") return;
+            addMessage("YOU: " + input.value);
+            // TO DO: Send input.value to Firebase/Supabase here
+            input.value = "";
+        }
+
+        input.addEventListener("keypress", (e) => { if (e.key === "Enter") send(); });
+    </script>
+</body>
+</html>
