@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SchoolHangoutCenter</title>
+    <style>
+        body { background: #000; color: #0f0; font-family: 'Courier New', monospace; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        #chat-window { width: 500px; height: 80vh; border: 1px solid #0f0; display: flex; flex-direction: column; background: #050505; box-shadow: 0 0 20px #0f03; }
+        #header { background: #0f0; color: #000; padding: 5px; font-weight: bold; text-align: center; font-size: 12px; }
+        #messages { flex-grow: 1; padding: 15px; overflow-y: auto; font-size: 13px; line-height: 1.5; }
+        #input-area { border-top: 1px solid #0f0; padding: 10px; display: flex; }
+        input { flex-grow: 1; background: transparent; border: none; color: #0f0; outline: none; font-family: inherit; }
+        button { background: #0f0; border: none; color: #000; cursor: pointer; padding: 5px 15px; font-weight: bold; }
+        .system { color: #888; font-style: italic; }
+    </style>
+</head>
+<body>
+    <div id="chat-window">
+        <div id="header">UPLINK STATUS: <span id="status">WEBHOOK ACTIVE</span></div>
+        <div id="messages"></div>
+        <div id="input-area">
+            <input type="text" id="msg-input" placeholder="Type message to send to Discord..." autocomplete="off">
+            <button onclick="handleSend()">SEND</button>
+        </div>
+    </div>
+
+    <script>
+        // 1. PASTE YOUR WEBHOOK URL HERE
+        const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1494072138100117554/UniqIW0GKuNDWxxz7PAe_CP524vEkH4TKZ9WE2URneUZw3Y4-0nshKOGHOXJrXwnnW_9";
+
+        const messagesDiv = document.getElementById('messages');
+        const input = document.getElementById('msg-input');
+
+        function addMessage(text, className = "") {
+            const div = document.createElement('div');
+            div.className = className;
+            div.innerText = text;
+            messagesDiv.appendChild(div);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        async function handleSend() {
+            const val = input.value.trim();
+            if (!val) return;
+
+            // Display locally
+            addMessage("YOU: " + val);
+            input.value = "";
+
+            // Send to Discord
+            try {
+                const response = await fetch(DISCORD_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        content: val,
+                        username: "SchoolHangout Terminal"
+                    })
+                });
+
+                if (!response.ok) {
+                    addMessage("SYSTEM: Error sending to Discord.", "system");
+                }
+            } catch (error) {
+                addMessage("SYSTEM: Connection failed.", "system");
+                console.error(error);
+            }
+        }
+
+        input.addEventListener("keypress", (e) => { if (e.key === "Enter") handleSend(); });
+
+        // Initial message
+        addMessage("SYSTEM: Terminal ready. Type a message and it will be sent to the linked Discord channel.", "system");
+    </script>
+</body>
+</html>
